@@ -1,0 +1,22 @@
+services:
+  - type: web
+    name: ringstack-pi-receptionist
+    runtime: node
+    region: ohio
+    plan: starter
+    buildCommand: npm install && npm run build
+    startCommand: npm start
+    healthCheckPath: /health
+    envVars:
+      - key: SUPABASE_URL
+        value: https://dnfpzvndgpivlkpkxrpi.supabase.co
+      - key: SUPABASE_SERVICE_ROLE_KEY
+        sync: false
+      - key: RETELL_API_KEY
+        sync: false
+      - key: SENDGRID_API_KEY
+        sync: false
+      - key: EMAIL_FROM
+        sync: false
+      - key: DEAD_LETTER_EMAIL
+        sync: false

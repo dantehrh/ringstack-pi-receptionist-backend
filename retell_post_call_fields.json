@@ -1,0 +1,23 @@
+{
+  "post_call_analysis_data": [
+    { "type": "system-presets", "name": "call_summary" },
+    { "type": "system-presets", "name": "call_successful" },
+    { "type": "system-presets", "name": "user_sentiment" },
+    { "type": "enum", "name": "caller_type", "description": "Who called.", "choices": ["new_lead", "existing_client", "other"], "required": false },
+    { "type": "string", "name": "caller_name", "description": "The caller's full name.", "required": false },
+    { "type": "string", "name": "callback_number", "description": "The best phone number to call the caller back on.", "required": false },
+    { "type": "string", "name": "incident_type", "description": "Type of incident, e.g. car crash, truck, motorcycle, pedestrian, slip and fall, workplace, dog bite.", "required": false },
+    { "type": "string", "name": "incident_date", "description": "When the incident happened.", "required": false },
+    { "type": "string", "name": "location", "description": "City and state where the incident happened.", "required": false },
+    { "type": "string", "name": "injuries", "description": "Injuries the caller described.", "required": false },
+    { "type": "string", "name": "treatment", "description": "Medical treatment status (seen by a doctor, ER, none yet).", "required": false },
+    { "type": "boolean", "name": "police_report", "description": "Whether the police were called or a report was made.", "required": false },
+    { "type": "boolean", "name": "insurance_contacted", "description": "Whether the caller has already spoken to an insurance company.", "required": false },
+    { "type": "boolean", "name": "existing_attorney", "description": "Whether the caller already has an attorney for this matter.", "required": false },
+    { "type": "boolean", "name": "qualified", "description": "Whether the matter fits the firm's intake criteria.", "required": false },
+    { "type": "enum", "name": "urgency", "description": "Lead urgency as judged by the agent.", "choices": ["urgent", "standard", "low"], "required": false },
+    { "type": "boolean", "name": "transferred", "description": "Whether a live transfer to the firm was attempted.", "required": false },
+    { "type": "string", "name": "language", "description": "The language the call was conducted in.", "required": false },
+    { "type": "string", "name": "summary", "description": "One-line intake summary of what happened and the caller's situation.", "required": false }
+  ]
+}
