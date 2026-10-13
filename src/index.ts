@@ -9,6 +9,11 @@ import type { RetellWebhook, IntakeFields } from "./types";
 
 const app = Fastify({ logger: true });
 
+// --- TEMPORARY DEBUG: remember the last webhook attempt's metadata (no bodies,
+// no secrets) so we can diagnose signature issues via GET /debug/last-webhook.
+// Remove before go-live.
+let lastWebhook: Record<string, unknown> | null = null;
+
 // Capture the raw body so we can verify Retell's signature over the exact bytes.
 app.addContentTypeParser("application/json", { parseAs: "string" }, (_req, body, done) => {
   try {
@@ -20,6 +25,9 @@ app.addContentTypeParser("application/json", { parseAs: "string" }, (_req, body,
 });
 
 app.get("/health", async () => ({ ok: true }));
+
+// TEMPORARY DEBUG endpoint — metadata only, remove before go-live.
+app.get("/debug/last-webhook", async () => lastWebhook ?? { note: "no webhook received yet" });
 
 app.post("/webhooks/retell", async (req, reply) => {
   const raw = (req as any).rawBody as string;
@@ -40,6 +48,16 @@ app.post("/webhooks/retell", async (req, reply) => {
   } catch (err) {
     req.log.error({ err }, "Retell.verify threw");
   }
+
+  // TEMPORARY DEBUG: record this attempt's metadata (no bodies/secrets).
+  lastWebhook = {
+    at: new Date().toISOString(),
+    hasSignature: !!signature,
+    verified,
+    event: peekedEvent,
+    bodyLength: raw?.length ?? 0,
+  };
+
   if (!verified) {
     // Distinguish an unsigned request (e.g. a dashboard test ping) from a
     // signed request we failed to verify (e.g. wrong RETELL_API_KEY).
