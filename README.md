@@ -43,8 +43,9 @@ npm run dev            # local dev on PORT (default 3000)
 
 ## Wire up Retell
 
-- In the firm-facing agent, set the **webhook URL** to the deployed `/webhooks/retell`.
+- In the firm-facing agent, set the **webhook URL** to the deployed `/webhooks/retell` (Agent → Webhook settings → Agent Level Webhook URL), keep the **Call analyzed** event enabled, and **publish** the agent.
 - Make sure the agent's **post-call extraction** fields match `IntakeFields` (section 4 of the backend spec): `caller_type, caller_name, callback_number, incident_type, incident_date, location, injuries, treatment, police_report, insurance_contacted, existing_attorney, qualified, urgency, transferred, language, summary`.
+- **IMPORTANT — signature key:** Retell signs webhooks with the ONE API key that shows a **"Webhook"** badge on the Settings → API Keys page. `RETELL_API_KEY` in Render MUST be that exact key's value, or every webhook is rejected with **401** (the logs say "signature present but verification FAILED"). If you use a different key, either put the badged key's value in Render or move the webhook badge onto the key you're using.
 
 ## Test end-to-end
 
