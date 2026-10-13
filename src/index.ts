@@ -25,13 +25,33 @@ app.post("/webhooks/retell", async (req, reply) => {
   const raw = (req as any).rawBody as string;
   const signature = req.headers["x-retell-signature"] as string | undefined;
 
+  // Peek at the event type for diagnostics (before verification).
+  let peekedEvent: string | undefined;
+  try {
+    peekedEvent = JSON.parse(raw)?.event;
+  } catch {
+    /* non-JSON body */
+  }
+
   // 1. Verify signature — reject anything not signed by our Retell key.
-  const valid =
-    signature &&
-    Retell.verify(raw, config.retellApiKey, signature);
-  if (!valid) {
-    req.log.warn("Rejected webhook: bad or missing signature");
-    return reply.code(401).send({ error: "invalid signature" });
+  let verified = false;
+  try {
+    verified = !!signature && Retell.verify(raw, config.retellApiKey, signature);
+  } catch (err) {
+    req.log.error({ err }, "Retell.verify threw");
+  }
+  if (!verified) {
+    // Distinguish an unsigned request (e.g. a dashboard test ping) from a
+    // signed request we failed to verify (e.g. wrong RETELL_API_KEY).
+    req.log.warn(
+      { hasSignature: !!signature, event: peekedEvent },
+      !signature
+        ? "Rejected webhook: no x-retell-signature header (unsigned request)"
+        : "Rejected webhook: signature present but verification FAILED (check RETELL_API_KEY)"
+    );
+    return reply
+      .code(401)
+      .send({ error: "invalid signature", hasSignature: !!signature });
   }
 
   const wh = req.body as RetellWebhook;
